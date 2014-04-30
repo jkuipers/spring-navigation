@@ -1,0 +1,9 @@
+# local IDE files
+.idea
+*.iml
+
+# Maven build directory
+target
+
+# other
+tmp
