@@ -106,7 +106,7 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
                             for (NavigationalStateEnricher<?> enricher : enrichers) {
                                 Object attribute = session.getAttribute(enricher.sessionAttributeName());
                                 session.setAttribute(enricher.sessionAttributeName(),
-                                        enricher.updateOnBasePageVisit(attribute));
+                                        enricher.updateOnBasePageVisit(attribute, request));
                             }
                         }
                         break;
@@ -125,7 +125,7 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
                             for (NavigationalStateEnricher<?> enricher : enrichers) {
                                 Object attribute = session.getAttribute(enricher.sessionAttributeName());
                                 session.setAttribute(enricher.sessionAttributeName(),
-                                        enricher.updateOnStepPageVisit(attribute));
+                                        enricher.updateOnStepPageVisit(attribute, request));
                             }
                         }
                         break;

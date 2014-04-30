@@ -2,6 +2,8 @@ package nl.trifork.spring.navigation;
 
 import org.springframework.ui.ModelMap;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author Quinten Krijger
  */
@@ -21,16 +23,17 @@ public abstract class SimpleNavigationalStateEnricher<T> implements Navigational
     }
 
     @Override
-    public T updateOnBasePageVisit(Object attribute) {
+    public T updateOnBasePageVisit(Object attribute, HttpServletRequest request) {
         try {
-            return domainClass.cast(attribute);
+            domainClass.cast(attribute);
         } catch (ClassCastException e) {
             throw new IllegalArgumentException(e);
         }
+        return init();
     }
 
     @Override
-    public T updateOnStepPageVisit(Object attribute) {
+    public T updateOnStepPageVisit(Object attribute, HttpServletRequest request) {
         try {
             return domainClass.cast(attribute);
         } catch (ClassCastException e) {

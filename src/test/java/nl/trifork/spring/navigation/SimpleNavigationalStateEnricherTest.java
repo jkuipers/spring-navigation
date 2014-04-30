@@ -3,6 +3,7 @@ package nl.trifork.spring.navigation;
 import nl.trifork.spring.navigation.testapp.controllers.annotated.BaseAndStepPagesMethodAnnotatedController;
 import org.junit.Test;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -51,12 +52,12 @@ public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest 
         }
 
         @Override
-        public String updateOnBasePageVisit(Object attribute) {
+        public String updateOnBasePageVisit(Object attribute, HttpServletRequest request) {
             return "base page visited";
         }
 
         @Override
-        public String updateOnStepPageVisit(Object attribute) {
+        public String updateOnStepPageVisit(Object attribute, HttpServletRequest request) {
             return "step page visited";
         }
 
