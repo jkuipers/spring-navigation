@@ -5,6 +5,12 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Quinten Krijger
  */
@@ -14,12 +20,24 @@ public abstract class AbstractNavigationTest {
     private MockHttpSession session;
 
     @Before
-    public void setUp() {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         this.session = new MockHttpSession();
+        NavigationHandlerInterceptor navigationHandlerInterceptor = new NavigationHandlerInterceptor();
+
+        List<NavigationalStateEnricher> enrichers = new ArrayList<>();
+        enrichers.addAll(getNavigationStateEnrichers());
+        Field field = navigationHandlerInterceptor.getClass().getDeclaredField("enrichers");
+        field.setAccessible(true);
+        field.set(navigationHandlerInterceptor, enrichers);
+
         this.mockMvc = MockMvcBuilders
                        .standaloneSetup(getControllersUnderTest())
-                       .addInterceptors(new NavigationHandlerInterceptor())
+                       .addInterceptors(navigationHandlerInterceptor)
                        .build();
+    }
+
+    protected Collection<? extends NavigationalStateEnricher> getNavigationStateEnrichers() {
+        return Collections.emptySet();
     }
 
     protected abstract Object[] getControllersUnderTest();

@@ -1,5 +1,6 @@
 package nl.trifork.spring.navigation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,7 +29,11 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
 
     public static final String NAVIGATION = "navigation";
 
-    public final String defaultBaseUri;
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    @Autowired
+    private List<NavigationalStateEnricher<?>> enrichers;
+
+    private final String defaultBaseUri;
 
     /**
      * Constructs a new {@link nl.trifork.spring.navigation.NavigationHandlerInterceptor} and sets the
@@ -60,10 +65,21 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (requestIsMappedToAController(handler)) {
             HttpSession session = request.getSession();
+
             if (session.getAttribute(NAVIGATION) == null) {
                 setNavigation(session, constructNavigationWithBase(defaultBaseUri));
             }
+
+            if (enrichers != null) {
+                for (NavigationalStateEnricher<?> enricher : enrichers) {
+                    Object attribute = session.getAttribute(enricher.sessionAttributeName());
+                    if (attribute == null) {
+                        session.setAttribute(enricher.sessionAttributeName(), enricher.init());
+                    }
+                }
+            }
         }
+
         return true;
     }
 
@@ -78,14 +94,21 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
                            ModelAndView modelAndView) {
         if (requestIsMappedToAController(handler) && isGetRequest(request)) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
-            if (isNavigationPoint(handlerMethod)) {
+            HttpSession session = request.getSession();
 
-                HttpSession session = request.getSession();
+            if (isNavigationPoint(handlerMethod)) {
 
                 String requestUri = getRequestUriIncludingParams(request);
                 switch (getNavigationPointType(handlerMethod)) {
                     case BASE:
                         setNavigation(session, constructNavigationWithBase(requestUri));
+                        if (enrichers != null) {
+                            for (NavigationalStateEnricher<?> enricher : enrichers) {
+                                Object attribute = session.getAttribute(enricher.sessionAttributeName());
+                                session.setAttribute(enricher.sessionAttributeName(),
+                                        enricher.updateOnBasePageVisit(attribute));
+                            }
+                        }
                         break;
                     case STEP:
                         List<String> navigation = getNavigation(session);
@@ -97,6 +120,14 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
                         } else if (!isRefreshAction) {
                             getNavigation(session).add(requestUri);
                         }
+
+                        if (enrichers != null) {
+                            for (NavigationalStateEnricher<?> enricher : enrichers) {
+                                Object attribute = session.getAttribute(enricher.sessionAttributeName());
+                                session.setAttribute(enricher.sessionAttributeName(),
+                                        enricher.updateOnStepPageVisit(attribute));
+                            }
+                        }
                         break;
                 }
             }
@@ -107,6 +138,13 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
                     : navigation.get(navSize - 1); // same as navigation.get(0)
             modelAndView.addObject("navigationBack", navigationBack);
             modelAndView.addObject("navigationBase", navigation.get(0));
+
+            if (enrichers != null) {
+                for (NavigationalStateEnricher<?> enricher : enrichers) {
+                    Object attribute = session.getAttribute(enricher.sessionAttributeName());
+                    enricher.postHandle(modelAndView.getModelMap(), attribute);
+                }
+            }
         }
     }
 
@@ -161,7 +199,7 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
         if (attribute == null || !(attribute instanceof List)) {
             return constructNavigationWithBase(defaultBaseUri);
         }
-        List<String> navigation = (List) attribute;
+        List<String> navigation = (List<String>) attribute;
         if (navigation.isEmpty()) {
             return constructNavigationWithBase(defaultBaseUri);
         } else {
