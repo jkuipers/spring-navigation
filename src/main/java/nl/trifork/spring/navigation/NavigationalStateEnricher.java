@@ -3,6 +3,7 @@ package nl.trifork.spring.navigation;
 import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * This class hooks into the {@link NavigationHandlerInterceptor} to enrich the session and model in a logical way with
@@ -62,8 +63,6 @@ public interface NavigationalStateEnricher<T> {
      * This method is called by {@link NavigationHandlerInterceptor} when visiting a controller, but after
      * {@link #updateOnBasePageVisit(Object, HttpServletRequest)} or
      * {@link #updateOnStepPageVisit(Object, HttpServletRequest)}.
-     * <p/>
-     * This method is only called in case
      *
      * @param modelMap the model map for the current request
      * @param attribute the session attributes current value
@@ -71,5 +70,13 @@ public interface NavigationalStateEnricher<T> {
      *         {@code T}
      */
     void postHandle(ModelMap modelMap, Object attribute);
+
+    /**
+     * Provides an entry for a controller with access to the session to update the attribute object
+     *
+     * @param updater
+     * @param session
+     */
+    void update(SessionAttributeUpdater<T> updater, HttpSession session);
 
 }

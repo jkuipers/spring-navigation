@@ -3,8 +3,10 @@ package nl.trifork.spring.navigation;
 import nl.trifork.spring.navigation.testapp.controllers.annotated.BaseAndStepPagesMethodAnnotatedController;
 import org.junit.Test;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -16,16 +18,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest {
 
+    private final NavigationalStateEnricherImpl navigationalStateEnricher = new NavigationalStateEnricherImpl();
+
     @Override
     protected Object[] getControllersUnderTest() {
         return new Object[] {
-                new BaseAndStepPagesMethodAnnotatedController()
+                new BaseAndStepPagesMethodAnnotatedController(),
+                new AlteringController()
         };
     }
 
     @Override
     protected Collection<? extends NavigationalStateEnricher> getNavigationStateEnrichers() {
-        return Arrays.asList(new NavigationalStateEnricherImpl());
+        return Arrays.asList(navigationalStateEnricher);
     }
 
     @Test
@@ -41,6 +46,12 @@ public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest 
     }
 
     @Test
+    public void a_controller_can_alter_the_sessions_attribute() throws Exception {
+        getMockMvc().perform(get("/alter").session(getSession()))
+                .andExpect(model().attribute("nav_attr", "altered in controller"));
+    }
+
+    @Test
     public void an_ericher_can_enrich_the_model_based_on_the_request() throws Exception {
         getMockMvc().perform(get("/base_2").session(getSession()))
                 .andExpect(model().attribute("nav_attr", "base page visited"));
@@ -49,7 +60,6 @@ public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest 
                 .param("name", "Quinten"))
                 .andExpect(model().attribute("nav_attr", "base page visited by Quinten"));
     }
-
 
     private static class NavigationalStateEnricherImpl extends SimpleNavigationalStateEnricher<String> {
 
@@ -76,6 +86,24 @@ public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest 
             return "step page visited";
         }
 
+    }
+
+    private class AlteringController {
+        @RequestMapping("alter")
+        public String alter(HttpSession session) {
+            navigationalStateEnricher.update(new SessionAttributeUpdater<String>() {
+                @Override
+                public String update(Object attributeToUpdate, Class<String> domainClass) {
+                    try {
+                        domainClass.cast(attributeToUpdate);
+                    } catch (ClassCastException e) {
+                        throw new IllegalArgumentException(e);
+                    }
+                    return "altered in controller";
+                }
+            }, session);
+            return "fake";
+        }
     }
 
 }

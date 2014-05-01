@@ -38,17 +38,17 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
     private final String defaultBaseUri;
 
     /**
-     * Constructs a new {@link nl.trifork.spring.navigation.NavigationHandlerInterceptor} and sets the
+     * Constructs a new {@link NavigationHandlerInterceptor} and sets the
      * {@code defaultBaseUri} to "/".
      *
-     * @see nl.trifork.spring.navigation.NavigationHandlerInterceptor#NavigationHandlerInterceptor(String)
+     * @see NavigationHandlerInterceptor#NavigationHandlerInterceptor(String)
      */
     public NavigationHandlerInterceptor() {
         this("/");
     }
 
     /**
-     * Constructs a new {@link nl.trifork.spring.navigation.NavigationHandlerInterceptor} with the supplied
+     * Constructs a new {@link NavigationHandlerInterceptor} with the supplied
      * {@code defaultBaseUri}.
      *
      * @param defaultBaseUri the default base uri, which is used in case no registered base uri was hit in the current
@@ -145,13 +145,12 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
                     modelAndView.addObject("navigationBack", navigationBack);
                     modelAndView.addObject("navigationBase", navigation.get(0));
                 }
-
-                if (enrichers != null) {
-                    for (NavigationalStateEnricher<?> enricher : enrichers) {
-                        if (modelAndView != null) {
-                            Object attribute = session.getAttribute(enricher.sessionAttributeName());
-                            enricher.postHandle(modelAndView.getModelMap(), attribute);
-                        }
+            }
+            if (enrichers != null) {
+                for (NavigationalStateEnricher<?> enricher : enrichers) {
+                    Object attribute = session.getAttribute(enricher.sessionAttributeName());
+                    if (modelAndView != null && attribute != null) {
+                        enricher.postHandle(modelAndView.getModelMap(), attribute);
                     }
                 }
             }
@@ -209,7 +208,7 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
         if (attribute == null || !(attribute instanceof List)) {
             return constructNavigationWithBase(defaultBaseUri);
         }
-        List<String> navigation = (List<String>) attribute;
+        List<String> navigation = (List) attribute;
         if (navigation.isEmpty()) {
             return constructNavigationWithBase(defaultBaseUri);
         } else {

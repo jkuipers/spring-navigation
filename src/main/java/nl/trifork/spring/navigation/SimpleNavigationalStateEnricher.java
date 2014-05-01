@@ -3,6 +3,7 @@ package nl.trifork.spring.navigation;
 import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author Quinten Krijger
@@ -52,4 +53,10 @@ public abstract class SimpleNavigationalStateEnricher<T> implements Navigational
         modelMap.put(attributeName, castAttribute);
     }
 
+    @Override
+    public void update(SessionAttributeUpdater<T> updater, HttpSession session) {
+        Object attribute = session.getAttribute(sessionAttributeName());
+        session.setAttribute(sessionAttributeName(),
+                updater.update(attribute, domainClass));
+    }
 }
