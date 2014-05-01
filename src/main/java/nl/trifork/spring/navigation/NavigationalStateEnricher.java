@@ -62,6 +62,8 @@ public interface NavigationalStateEnricher<T> {
      * This method is called by {@link NavigationHandlerInterceptor} when visiting a controller, but after
      * {@link #updateOnBasePageVisit(Object, HttpServletRequest)} or
      * {@link #updateOnStepPageVisit(Object, HttpServletRequest)}.
+     * <p/>
+     * This method is only called in case
      *
      * @param modelMap the model map for the current request
      * @param attribute the session attributes current value

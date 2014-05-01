@@ -63,18 +63,22 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (requestIsMappedToAController(handler)) {
+        if (requestIsMappedToAController(handler) && isGetRequest(request)) {
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
             HttpSession session = request.getSession();
 
-            if (session.getAttribute(NAVIGATION) == null) {
-                setNavigation(session, constructNavigationWithBase(defaultBaseUri));
-            }
+            if (isNavigationPoint(handlerMethod)) {
 
-            if (enrichers != null) {
-                for (NavigationalStateEnricher<?> enricher : enrichers) {
-                    Object attribute = session.getAttribute(enricher.sessionAttributeName());
-                    if (attribute == null) {
-                        session.setAttribute(enricher.sessionAttributeName(), enricher.init());
+                if (session.getAttribute(NAVIGATION) == null) {
+                    setNavigation(session, constructNavigationWithBase(defaultBaseUri));
+                }
+
+                if (enrichers != null) {
+                    for (NavigationalStateEnricher<?> enricher : enrichers) {
+                        Object attribute = session.getAttribute(enricher.sessionAttributeName());
+                        if (attribute == null) {
+                            session.setAttribute(enricher.sessionAttributeName(), enricher.init());
+                        }
                     }
                 }
             }
@@ -85,7 +89,7 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
 
     /**
      * {@inheritDoc}
-     * </p>
+     * <p/>
      * This implementation extends the navigation object with the new navigation action. It also puts "navigationBack"
      * and "navigationBase" on the model.
      */
@@ -130,19 +134,23 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
                         }
                         break;
                 }
-            }
-            List<String> navigation = getNavigation(request.getSession());
-            int navSize = navigation.size();
-            String navigationBack = (navSize > 1)
-                    ? navigation.get(navSize - 2)
-                    : navigation.get(navSize - 1); // same as navigation.get(0)
-            modelAndView.addObject("navigationBack", navigationBack);
-            modelAndView.addObject("navigationBase", navigation.get(0));
+                List<String> navigation = getNavigation(request.getSession());
+                int navSize = navigation.size();
+                String navigationBack = (navSize > 1)
+                        ? navigation.get(navSize - 2)
+                        : navigation.get(navSize - 1); // same as navigation.get(0)
+                if (modelAndView != null) {
+                    modelAndView.addObject("navigationBack", navigationBack);
+                    modelAndView.addObject("navigationBase", navigation.get(0));
+                }
 
-            if (enrichers != null) {
-                for (NavigationalStateEnricher<?> enricher : enrichers) {
-                    Object attribute = session.getAttribute(enricher.sessionAttributeName());
-                    enricher.postHandle(modelAndView.getModelMap(), attribute);
+                if (enrichers != null) {
+                    for (NavigationalStateEnricher<?> enricher : enrichers) {
+                        if (modelAndView != null) {
+                            Object attribute = session.getAttribute(enricher.sessionAttributeName());
+                            enricher.postHandle(modelAndView.getModelMap(), attribute);
+                        }
+                    }
                 }
             }
         }
