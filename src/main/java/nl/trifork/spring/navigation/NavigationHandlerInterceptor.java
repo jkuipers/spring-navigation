@@ -16,11 +16,13 @@ import java.util.List;
 
 /**
  * Handles the navigation object on the users session.
- * </p>
+ * <p/>
  * Only activates on {@link org.springframework.stereotype.Controller} that are a
  * {@link NavigationPoint} or {@link nl.trifork.spring.navigation.annotations.NavigationPoint}.
- * </p>
+ * <p/>
  * Only takes GET requests into account.
+ *
+ * TODO move the navigation logic to a NavigationStackEnricher
  *
  * @author Quinten Krijger
  */
@@ -58,7 +60,7 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
 
     /**
      * {@inheritDoc}
-     * </p>
+     * <p/>
      * This implementation defines a default navigation object in case none exists.
      */
     @Override

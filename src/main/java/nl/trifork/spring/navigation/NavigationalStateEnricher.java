@@ -21,7 +21,7 @@ public interface NavigationalStateEnricher<T> {
 
     /**
      * Creates a new object of type {@code T}.
-     * </p>
+     * <p/>
      * This method is called by {@link NavigationHandlerInterceptor} before visiting a
      * {@link org.springframework.stereotype.Controller} in case no attribute with given
      * {@link #sessionAttributeName()} exists yet.
@@ -32,7 +32,7 @@ public interface NavigationalStateEnricher<T> {
 
     /**
      * Updates and returns the attribute object. Note that {@code attribute} should be of type {@code T}.
-     * </p>
+     * <p/>
      * This method is called by {@link NavigationHandlerInterceptor} when visiting a base navigation point request
      * mapping.
      *
@@ -46,7 +46,7 @@ public interface NavigationalStateEnricher<T> {
 
     /**
      * Updates and returns the attribute object. Note that {@code attribute} should be of type {@code T}.
-     * </p>
+     * <p/>
      * This method is called by {@link NavigationHandlerInterceptor} when visiting a step navigation point request
      * mapping.
      *

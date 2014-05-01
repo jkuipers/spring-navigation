@@ -1,12 +1,15 @@
 package nl.trifork.spring.navigation;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Utility methods on the navigational state.
- * </p>
+ * <p/>
  * The navigational state is managed in {@link NavigationHandlerInterceptor}.
+ *
+ * TODO integrate this into a NavigationStackEnricher
  *
  * @author Quinten Krijger
  */
@@ -58,7 +61,13 @@ public final class NavigationUtil {
      * @return the users navigational state
      */
     private static List<String> retrieveNavigation(HttpServletRequest request) {
-        return (List) request.getSession().getAttribute("navigation");
+        Object navigation = request.getSession().getAttribute("navigation");
+        if (navigation == null) {
+            return Arrays.asList("/"); // this is a quick fix. TODO is make the navigation logic an enricher which
+            // includes this Util functionality
+        } else {
+            return (List) navigation;
+        }
     }
 
 }
