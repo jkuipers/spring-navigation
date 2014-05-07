@@ -1,5 +1,6 @@
 package nl.trifork.spring.navigation;
 
+import nl.trifork.spring.navigation.stack.NavigationStackEnricher;
 import org.junit.Before;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,7 +26,8 @@ public abstract class AbstractNavigationTest {
         NavigationHandlerInterceptor navigationHandlerInterceptor = new NavigationHandlerInterceptor();
 
         List<NavigationalStateEnricher> enrichers = new ArrayList<>();
-        enrichers.addAll(getNavigationStateEnrichers());
+        enrichers.add(new NavigationStackEnricher());
+        enrichers.addAll(additionalNavigationStateEnrichers());
         Field field = navigationHandlerInterceptor.getClass().getDeclaredField("enrichers");
         field.setAccessible(true);
         field.set(navigationHandlerInterceptor, enrichers);
@@ -36,7 +38,7 @@ public abstract class AbstractNavigationTest {
                        .build();
     }
 
-    protected Collection<? extends NavigationalStateEnricher> getNavigationStateEnrichers() {
+    protected Collection<? extends NavigationalStateEnricher> additionalNavigationStateEnrichers() {
         return Collections.emptySet();
     }
 

@@ -29,7 +29,7 @@ public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest 
     }
 
     @Override
-    protected Collection<? extends NavigationalStateEnricher> getNavigationStateEnrichers() {
+    protected Collection<? extends NavigationalStateEnricher> additionalNavigationStateEnrichers() {
         return Arrays.asList(navigationalStateEnricher);
     }
 
