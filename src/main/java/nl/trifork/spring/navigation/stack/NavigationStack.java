@@ -40,15 +40,19 @@ public class NavigationStack {
     }
 
     public String getLastNavigationPointUri() {
+        return navigationSteps.get(navigationSteps.size() - 1);
+    }
+
+    public String getPreviousNavigationPointUri() {
         int navSize = navigationSteps.size();
         if (navSize > 1) {
             return navigationSteps.get(navSize - 2);
         } else {
-            return getNavigationBaseUri();
+            return getLastNavigationPointUri();
         }
     }
 
-    public String getNavigationBaseUri() {
+    public String getBaseNavigationPointUri() {
         return navigationSteps.get(0);
     }
 }

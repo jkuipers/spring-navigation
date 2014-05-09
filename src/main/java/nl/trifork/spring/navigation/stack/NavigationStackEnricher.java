@@ -66,8 +66,9 @@ public class NavigationStackEnricher extends SimpleNavigationalStateEnricher<Nav
     @Override
     public void postHandle(ModelMap modelMap, Object attribute) {
         NavigationStack navigationStack = assertNonNullNavigationStackAttribute(attribute);
-        modelMap.addAttribute("navigationBack", navigationStack.getLastNavigationPointUri());
-        modelMap.addAttribute("navigationBase", navigationStack.getNavigationBaseUri());
+        modelMap.addAttribute("navigationCurrent", navigationStack.getLastNavigationPointUri());
+        modelMap.addAttribute("navigationBack", navigationStack.getPreviousNavigationPointUri());
+        modelMap.addAttribute("navigationBase", navigationStack.getBaseNavigationPointUri());
     }
 
     /**
@@ -89,7 +90,18 @@ public class NavigationStackEnricher extends SimpleNavigationalStateEnricher<Nav
      * @return the user navigations base url
      */
     public String retrieveCurrentBaseUrl(HttpServletRequest request) {
-        return retrieveNavigationStack(request).getNavigationBaseUri();
+        return retrieveNavigationStack(request).getBaseNavigationPointUri();
+    }
+
+    /**
+     * Find out what the previous navigation point url in the current user navigation is. Useful for going back in the
+     * navigation stack
+     *
+     * @param request the http request (which includes the session, which includes the navigation)
+     * @return the user navigations base url
+     */
+    public String retrievePreviousNavigationPointUrl(HttpServletRequest request) {
+        return retrieveNavigationStack(request).getPreviousNavigationPointUri();
     }
 
     /**
@@ -100,7 +112,7 @@ public class NavigationStackEnricher extends SimpleNavigationalStateEnricher<Nav
      * @return the user navigations base url
      */
     public String retrieveLastNavigationPointUrl(HttpServletRequest request) {
-        return retrieveNavigationStack(request).getLastNavigationPointUri();
+        return retrieveNavigationStack(request).getPreviousNavigationPointUri();
     }
 
     /**

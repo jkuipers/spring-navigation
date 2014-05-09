@@ -24,6 +24,7 @@ public class ImplementingControllersTest extends AbstractNavigationTest {
     @Test
     public void navigation_to_base_page() throws Exception {
         getMockMvc().perform(get("/base").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base"))
                 .andExpect(model().attribute("navigationBack", "/base"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
@@ -32,6 +33,7 @@ public class ImplementingControllersTest extends AbstractNavigationTest {
     @Test
     public void navigation_to_step_page() throws Exception {
         getMockMvc().perform(get("/base/step/one").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base/step/one"))
                 .andExpect(model().attribute("navigationBack", "/"))
                 .andExpect(model().attribute("navigationBase", "/"))
                 .andExpect(status().isOk());
@@ -41,6 +43,7 @@ public class ImplementingControllersTest extends AbstractNavigationTest {
     public void navigation_to_step_page_via_base_page() throws Exception {
         getMockMvc().perform(get("/base").session(getSession()));
         getMockMvc().perform(get("/base/step/one").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base/step/one"))
                 .andExpect(model().attribute("navigationBack", "/base"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
@@ -51,6 +54,7 @@ public class ImplementingControllersTest extends AbstractNavigationTest {
         getMockMvc().perform(get("/base").session(getSession()));
         getMockMvc().perform(get("/base/step/one").session(getSession()));
         getMockMvc().perform(get("/base/step/two").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base/step/two"))
                 .andExpect(model().attribute("navigationBack", "/base/step/one"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
@@ -61,6 +65,7 @@ public class ImplementingControllersTest extends AbstractNavigationTest {
         getMockMvc().perform(get("/base").session(getSession()));
         getMockMvc().perform(get("/base/step/one").session(getSession()));
         getMockMvc().perform(get("/base/step/one").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base/step/one"))
                 .andExpect(model().attribute("navigationBack", "/base"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
@@ -71,11 +76,13 @@ public class ImplementingControllersTest extends AbstractNavigationTest {
         getMockMvc().perform(get("/base").session(getSession()));
         getMockMvc().perform(get("/base/step/one").session(getSession()));
         getMockMvc().perform(get("/base").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base"))
                 .andExpect(model().attribute("navigationBack", "/base"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
         getMockMvc().perform(get("/base/step/one").session(getSession()));
         getMockMvc().perform(get("/base/step/two").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base/step/two"))
                 .andExpect(model().attribute("navigationBack", "/base/step/one"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());

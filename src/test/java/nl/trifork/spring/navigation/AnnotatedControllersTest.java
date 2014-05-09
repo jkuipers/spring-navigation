@@ -26,6 +26,7 @@ public class AnnotatedControllersTest extends AbstractNavigationTest {
     @Test
     public void navigation_to_base_page() throws Exception {
         getMockMvc().perform(get("/base").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base"))
                 .andExpect(model().attribute("navigationBack", "/base"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
@@ -34,6 +35,7 @@ public class AnnotatedControllersTest extends AbstractNavigationTest {
     @Test
     public void navigation_to_step_page() throws Exception {
         getMockMvc().perform(get("/base/step/one").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base/step/one"))
                 .andExpect(model().attribute("navigationBack", "/"))
                 .andExpect(model().attribute("navigationBase", "/"))
                 .andExpect(status().isOk());
@@ -43,6 +45,7 @@ public class AnnotatedControllersTest extends AbstractNavigationTest {
     public void navigation_to_step_page_via_base_page() throws Exception {
         getMockMvc().perform(get("/base").session(getSession()));
         getMockMvc().perform(get("/base/step/one").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base/step/one"))
                 .andExpect(model().attribute("navigationBack", "/base"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
@@ -53,6 +56,7 @@ public class AnnotatedControllersTest extends AbstractNavigationTest {
         getMockMvc().perform(get("/base").session(getSession()));
         getMockMvc().perform(get("/base/step/one").session(getSession()));
         getMockMvc().perform(get("/base/step/two").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base/step/two"))
                 .andExpect(model().attribute("navigationBack", "/base/step/one"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
@@ -63,6 +67,7 @@ public class AnnotatedControllersTest extends AbstractNavigationTest {
         getMockMvc().perform(get("/base").session(getSession()));
         getMockMvc().perform(get("/base/step/one").session(getSession()));
         getMockMvc().perform(get("/base/step/one").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base/step/one"))
                 .andExpect(model().attribute("navigationBack", "/base"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
@@ -73,11 +78,13 @@ public class AnnotatedControllersTest extends AbstractNavigationTest {
         getMockMvc().perform(get("/base").session(getSession()));
         getMockMvc().perform(get("/base/step/one").session(getSession()));
         getMockMvc().perform(get("/base").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base"))
                 .andExpect(model().attribute("navigationBack", "/base"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
         getMockMvc().perform(get("/base/step/one").session(getSession()));
         getMockMvc().perform(get("/base/step/two").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base/step/two"))
                 .andExpect(model().attribute("navigationBack", "/base/step/one"))
                 .andExpect(model().attribute("navigationBase", "/base"))
                 .andExpect(status().isOk());
@@ -88,6 +95,7 @@ public class AnnotatedControllersTest extends AbstractNavigationTest {
         getMockMvc().perform(get("/base_2").session(getSession()));
         getMockMvc().perform(get("/base_2/step").session(getSession()));
         getMockMvc().perform(get("/base_2/step_2").session(getSession()))
+                .andExpect(model().attribute("navigationCurrent", "/base_2/step_2"))
                 .andExpect(model().attribute("navigationBack", "/base_2/step"))
                 .andExpect(model().attribute("navigationBase", "/base_2"))
                 .andExpect(status().isOk());
