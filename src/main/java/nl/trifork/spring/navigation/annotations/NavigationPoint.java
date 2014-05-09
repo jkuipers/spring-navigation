@@ -17,6 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * controller, or choosing only a sub-selection.
  *
  * @author Quinten Krijger
+ * @see nl.trifork.spring.navigation.NavigationPoint
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RUNTIME)

@@ -5,6 +5,7 @@ package nl.trifork.spring.navigation;
  * logical back button.
  *
  * @author Quinten Krijger
+ * @see nl.trifork.spring.navigation.annotations.NavigationPoint
  */
 public interface NavigationPoint {
 

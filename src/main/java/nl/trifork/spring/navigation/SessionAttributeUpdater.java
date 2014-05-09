@@ -1,6 +1,8 @@
 package nl.trifork.spring.navigation;
 
 /**
+ * Functional interface for an update action on a session attribute.
+ *
  * @author Quinten Krijger
  */
 public interface SessionAttributeUpdater<T> {
