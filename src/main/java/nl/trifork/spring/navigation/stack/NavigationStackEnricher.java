@@ -1,5 +1,6 @@
 package nl.trifork.spring.navigation.stack;
 
+import nl.trifork.spring.navigation.NavigationPointType;
 import nl.trifork.spring.navigation.SimpleNavigationalStateEnricher;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
@@ -8,6 +9,17 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * Maintains the {@link NavigationStack} in the users session and makes it accessible for the application.
+ * <p/>
+ * On a {@link NavigationPointType#BASE} page visit, the stack will be rebased to the new request uri and contain only a
+ * single uri after.
+ * <p/>
+ * On a {@link NavigationPointType#STEP} page visit, the stack will be expanded with the new request uri.
+ * <p/>
+ * The model is enriched with the following attributes: <ul> <li>navigationCurrent: {@link String}, the uri of the last
+ * navigation point</li> <li>navigationBack: {@link String}, the uri of the previous navigation point</li>
+ * <li>navigationBase: {@link String}, the uri of the first navigation point</li> </ul>
+ *
  * @author Quinten Krijger
  */
 @Component
