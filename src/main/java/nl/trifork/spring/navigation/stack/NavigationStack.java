@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author Quinten Krijger
  */
-public class NavigationStack {
+class NavigationStack {
 
     private List<String> navigationSteps = new ArrayList<>();
 
