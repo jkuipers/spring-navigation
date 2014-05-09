@@ -112,7 +112,7 @@ public class NavigationStackEnricher extends SimpleNavigationalStateEnricher<Nav
      * @return the user navigations base url
      */
     public String retrieveLastNavigationPointUrl(HttpServletRequest request) {
-        return retrieveNavigationStack(request).getPreviousNavigationPointUri();
+        return retrieveNavigationStack(request).getLastNavigationPointUri();
     }
 
     /**
