@@ -1,7 +1,9 @@
 package nl.trifork.spring.navigation;
 
+import nl.trifork.spring.navigation.stack.NavigationStackEnricher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,12 +15,11 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
- * Handles the navigation object on the users session.
+ * Activates the functionality of all registered {@link NavigationalStateEnricher}s, such as the {@link
+ * NavigationStackEnricher} and user-defined enrichers.
  * <p/>
- * Only activates on {@link org.springframework.stereotype.Controller} that are a
+ * Only activates on {@link org.springframework.stereotype.Controller} {@link RequestMethod#GET} methods that are a
  * {@link NavigationPoint} or {@link nl.trifork.spring.navigation.annotations.NavigationPoint}.
- * <p/>
- * Only takes GET requests into account.
  *
  * @author Quinten Krijger
  */
@@ -32,7 +33,12 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
     /**
      * {@inheritDoc}
      * <p/>
-     * This implementation defines a default navigation object in case none exists.
+     * This implementation loops through all wired {@link NavigationalStateEnricher}s and initializes (see {@link
+     * NavigationalStateEnricher#init()}) and adds this to the model under the attribute name {@link
+     * NavigationalStateEnricher#sessionAttributeName()}.
+     * <p/>
+     * Only activates on {@link org.springframework.stereotype.Controller} {@link RequestMethod#GET} methods that are a
+     * {@link NavigationPoint} or {@link nl.trifork.spring.navigation.annotations.NavigationPoint}.
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -58,8 +64,14 @@ public class NavigationHandlerInterceptor extends HandlerInterceptorAdapter {
     /**
      * {@inheritDoc}
      * <p/>
-     * This implementation extends the navigation object with the new navigation action. It also puts "navigationBack"
-     * and "navigationBase" on the model.
+     * This implementation loops through all wired {@link NavigationalStateEnricher}s and calls the relevant {@link
+     * NavigationalStateEnricher#updateOnBasePageVisit(Object, HttpServletRequest)} or {@link
+     * NavigationalStateEnricher#updateOnStepPageVisit(Object, HttpServletRequest)} based on the intercepted requests
+     * {@link NavigationPointType}. Moreover, it calls {@link NavigationalStateEnricher#postHandle(ModelMap, Object)},
+     * in which the model may be enriched.
+     * <p/>
+     * Only activates on {@link org.springframework.stereotype.Controller} {@link RequestMethod#GET} methods that are a
+     * {@link NavigationPoint} or {@link nl.trifork.spring.navigation.annotations.NavigationPoint}.
      */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
