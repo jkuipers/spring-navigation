@@ -74,8 +74,9 @@ public interface NavigationalStateEnricher<T> {
     /**
      * Provides an entry for a controller with access to the session to update the attribute object
      *
-     * @param updater
-     * @param session
+     * @param updater function that updates the attribute
+     * @param session the user session containing the attribute
+     * @return the updated attribute value
      */
     T update(SessionAttributeUpdater<T> updater, HttpSession session);
 

@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(MockitoJUnitRunner.class)
 public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest {
 
-    private final NavigationalStateEnricherImpl navigationalStateEnricher = new NavigationalStateEnricherImpl();
+    private final NavigationalStateEnricher<String> navigationalStateEnricher = new NavigationalStateEnricherImpl();
 
     @Mock
     private List<String> updatedValueReceiver;
