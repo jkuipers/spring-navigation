@@ -77,6 +77,6 @@ public interface NavigationalStateEnricher<T> {
      * @param updater
      * @param session
      */
-    void update(SessionAttributeUpdater<T> updater, HttpSession session);
+    T update(SessionAttributeUpdater<T> updater, HttpSession session);
 
 }

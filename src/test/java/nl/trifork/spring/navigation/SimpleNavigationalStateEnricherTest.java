@@ -2,6 +2,11 @@ package nl.trifork.spring.navigation;
 
 import nl.trifork.spring.navigation.testapp.controllers.annotated.BaseAndStepPagesMethodAnnotatedController;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -9,22 +14,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 /**
  * @author Quinten Krijger
  */
+@RunWith(MockitoJUnitRunner.class)
 public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest {
 
     private final NavigationalStateEnricherImpl navigationalStateEnricher = new NavigationalStateEnricherImpl();
+
+    @Mock
+    private List<String> updatedValueReceiver;
+
+    @InjectMocks
+    private AlteringController alteringController = new AlteringController();
 
     @Override
     protected Object[] getControllersUnderTest() {
         return new Object[] {
                 new BaseAndStepPagesMethodAnnotatedController(),
-                new AlteringController()
+                alteringController
         };
     }
 
@@ -49,6 +63,9 @@ public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest 
     public void a_controller_can_alter_the_sessions_attribute() throws Exception {
         getMockMvc().perform(get("/alter").session(getSession()))
                 .andExpect(model().attribute("nav_attr", "altered in controller"));
+
+        // where the update operation returns the altered value
+        verify(updatedValueReceiver).add("altered in controller");
     }
 
     @Test
@@ -89,9 +106,14 @@ public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest 
     }
 
     private class AlteringController {
+
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+        @Autowired
+        private List<String> updatedValueReceiver;
+
         @RequestMapping("alter")
         public String alter(HttpSession session) {
-            navigationalStateEnricher.update(new SessionAttributeUpdater<String>() {
+            String updatedValue = navigationalStateEnricher.update(new SessionAttributeUpdater<String>() {
                 @Override
                 public String update(Object attributeToUpdate, Class<String> domainClass) {
                     try {
@@ -102,6 +124,7 @@ public class SimpleNavigationalStateEnricherTest extends AbstractNavigationTest 
                     return "altered in controller";
                 }
             }, session);
+            updatedValueReceiver.add(updatedValue);
             return "fake";
         }
     }

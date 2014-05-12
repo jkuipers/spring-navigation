@@ -54,9 +54,10 @@ public abstract class SimpleNavigationalStateEnricher<T> implements Navigational
     }
 
     @Override
-    public void update(SessionAttributeUpdater<T> updater, HttpSession session) {
+    public T update(SessionAttributeUpdater<T> updater, HttpSession session) {
         Object attribute = session.getAttribute(sessionAttributeName());
-        session.setAttribute(sessionAttributeName(),
-                updater.update(attribute, domainClass));
+        T updated = updater.update(attribute, domainClass);
+        session.setAttribute(sessionAttributeName(), updated);
+        return updated;
     }
 }
